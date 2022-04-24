@@ -1,0 +1,19 @@
+--PLAYERS AND CHARACTERS--
+1. Players can choose between multiple characters
+2. Characters will have different abilities to use during gameplay
+3. Basic movements will be consistent between characters. However,
+   characters may have different movement abilities.
+4. All players and the different characters start with the same weapon
+
+--GAMEPLAY--
+1. Players will fight each other until the score limit is reached
+    a. Score limit may be a pre-defined number of kills on the other player.
+2. Power-ups will be spread across the map for players to pick up.
+    a. Power-ups will hopefully be random at the start of the match.
+3. Most mechanics will be on a timer cooldown
+
+--MENUS--
+1. The start screen will allow the player to navigate to the character and/or
+   the controller assignment menu.
+2. Next will be the map selection screen.
+3. Possibly add menu to change score limit.

@@ -6,6 +6,9 @@
 
 package player;
 
+import character.Don;
+import character.Liz;
+import character.Wes;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.input.gamepad.FlxGamepad;
@@ -16,14 +19,15 @@ class Player extends FlxSprite
 {
 	// Player variables
 	public var BASEACCEL:Int = 800;
-	public var BASEDRAG = new FlxPoint(1500, 1500);
+	public var BASEDRAG = new FlxPoint(2000, 2000);
 	public var MAXSPEED = new FlxPoint(400, 400);
 	public var MAXHEALTH:Int = 3;
+	public var character:String;
 
 	// Controller
-	var gamepad:FlxGamepad;
+	public var gamepad:FlxGamepad;
 
-	public function new(X:Float = 0, Y:Float = 0, playerGamepad:FlxGamepad)
+	public function new(X:Float = 0, Y:Float = 0, playerGamepad:FlxGamepad, playerCharacter:String)
 	{
 		// Call super
 		super(X, Y);
@@ -31,12 +35,12 @@ class Player extends FlxSprite
 		// Set player controller
 		gamepad = playerGamepad;
 
+		// Set character
+		character = playerCharacter;
+
 		// Change player variables
 		this.maxVelocity = MAXSPEED;
 		this.drag = BASEDRAG;
-
-		// Give graphic
-		makeGraphic(20, 20, FlxColor.WHITE);
 	}
 
 	override public function update(elapsed:Float)
@@ -45,16 +49,20 @@ class Player extends FlxSprite
 		if (gamepad != null)
 		{
 			// Call move function
-			movePlayerGamepad(gamepad);
+			movePlayerGamepad();
 			// Call shoot function
 			shoot();
+			// Call dash function
+			dash();
+			// Call ability function
+			ability();
 		}
 
 		// Call super
 		super.update(elapsed);
 	}
 
-	public function movePlayerGamepad(gamepad:FlxGamepad)
+	public function movePlayerGamepad()
 	{
 		// If pressed
 		if (gamepad.pressed.DPAD_UP)
@@ -98,7 +106,33 @@ class Player extends FlxSprite
 		{
 			acceleration.x = 0;
 		}
+
+		if (gamepad.justPressed.BACK)
+		{
+			FlxG.fullscreen = !FlxG.fullscreen;
+		}
 	}
 
 	private function shoot() {}
+
+	private function dash() {}
+
+	private function ability()
+	{
+		if (gamepad.justPressed.LEFT_TRIGGER_BUTTON)
+		{
+			if (character == "DON")
+			{
+				// Call Don ability function
+			}
+			if (character == "Liz")
+			{
+				// Call Liz ability function
+			}
+			if (character == "Wes")
+			{
+				// Call Wes ability function
+			}
+		}
+	}
 }

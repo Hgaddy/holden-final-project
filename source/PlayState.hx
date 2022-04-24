@@ -1,16 +1,16 @@
 package;
 
+import character.Don;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadManager;
-import lime.ui.Gamepad;
 import player.Player;
 
 class PlayState extends FlxState
 {
 	// Player variables
-	var player1:Player;
+	var player1:Don;
 	var player2:Player;
 
 	// Controller variables
@@ -26,12 +26,12 @@ class PlayState extends FlxState
 		gamepad2 = FlxG.gamepads.getByID(1);
 
 		// Create player
-		player1 = new Player(FlxG.width / 2 - 200, FlxG.height / 2, gamepad1);
-		player2 = new Player(FlxG.width / 2 + 200, FlxG.height / 2, gamepad2);
+		player1 = new Don(FlxG.width / 2 - 200, FlxG.height / 2, gamepad1);
+		// player2 = new Player(FlxG.width / 2 + 200, FlxG.height / 2, gamepad2);
 
 		// Add player
 		add(player1);
-		add(player2);
+		// add(player2);
 	}
 
 	override public function update(elapsed:Float)

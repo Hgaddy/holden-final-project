@@ -6,6 +6,7 @@
 
 package player;
 
+import bullet.Bullet;
 import character.Don;
 import character.Liz;
 import character.Wes;
@@ -14,97 +15,82 @@ import flixel.FlxSprite;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class Player extends FlxSprite
 {
 	// Player variables
-	public var BASEACCEL:Int = 800;
+	public var BASEVEL:Int = 200;
 	public var BASEDRAG = new FlxPoint(2000, 2000);
-	public var MAXSPEED = new FlxPoint(400, 400);
 	public var MAXHEALTH:Int = 3;
-	public var character:String;
 
-	// Controller
-	public var gamepad:FlxGamepad;
+	// Shoot variables
+	public var shootCooldown:FlxTimer = new FlxTimer();
+	public var canShoot:Bool = true;
 
-	public function new(X:Float = 0, Y:Float = 0, playerGamepad:FlxGamepad, playerCharacter:String)
+	// Dash variables
+	public var dashCooldown:FlxTimer = new FlxTimer();
+	public var speedChange:FlxTimer = new FlxTimer();
+	public var canDash:Bool = true;
+
+	public function new(X:Float = 0, Y:Float = 0)
 	{
 		// Call super
 		super(X, Y);
 
-		// Set player controller
-		gamepad = playerGamepad;
-
-		// Set character
-		character = playerCharacter;
-
 		// Change player variables
-		this.maxVelocity = MAXSPEED;
 		this.drag = BASEDRAG;
 	}
 
 	override public function update(elapsed:Float)
 	{
-		// If gamepad assigned
-		if (gamepad != null)
-		{
-			// Call move function
-			movePlayerGamepad();
-			// Call shoot function
-			shoot();
-			// Call dash function
-			dash();
-			// Call ability function
-			ability();
-		}
-
 		// Call super
 		super.update(elapsed);
 	}
 
-	public function movePlayerGamepad()
+	private function movePlayerGamepad(gamepad:FlxGamepad)
 	{
 		// If pressed
 		if (gamepad.pressed.DPAD_UP)
 		{
-			acceleration.y = -BASEACCEL;
+			velocity.y = -BASEVEL;
 		}
 
 		if (gamepad.pressed.DPAD_LEFT)
 		{
-			acceleration.x = -BASEACCEL;
+			velocity.x = -BASEVEL;
 		}
 
 		if (gamepad.pressed.DPAD_DOWN)
 		{
-			acceleration.y = BASEACCEL;
+			velocity.y = BASEVEL;
 		}
 
 		if (gamepad.pressed.DPAD_RIGHT)
 		{
-			acceleration.x = BASEACCEL;
+			velocity.x = BASEVEL;
 		}
 
 		// If released
 		if (gamepad.justReleased.DPAD_UP || gamepad.justReleased.DPAD_DOWN)
 		{
-			acceleration.y = 0;
+			velocity.y = 0;
 		}
 
 		if (gamepad.justReleased.DPAD_LEFT || gamepad.justReleased.DPAD_RIGHT)
 		{
-			acceleration.x = 0;
+			velocity.x = 0;
 		}
 
 		// If both pressed
 		if (gamepad.pressed.DPAD_UP && gamepad.pressed.DPAD_DOWN)
 		{
-			acceleration.y = 0;
+			velocity.y = 0;
 		}
 
 		if (gamepad.pressed.DPAD_LEFT && gamepad.pressed.DPAD_RIGHT)
 		{
-			acceleration.x = 0;
+			velocity.x = 0;
 		}
 
 		if (gamepad.justPressed.BACK)
@@ -113,26 +99,76 @@ class Player extends FlxSprite
 		}
 	}
 
-	private function shoot() {}
-
-	private function dash() {}
-
-	private function ability()
+	private function resetShoot(timer:FlxTimer)
 	{
-		if (gamepad.justPressed.LEFT_TRIGGER_BUTTON)
+		canShoot = true;
+	}
+
+	public function isShootReady():Bool
+	{
+		return canShoot;
+	}
+
+	private function shoot(gamepad:FlxGamepad)
+	{
+		if (canShoot && gamepad.pressed.RIGHT_SHOULDER)
 		{
-			if (character == "DON")
-			{
-				// Call Don ability function
-			}
-			if (character == "Liz")
-			{
-				// Call Liz ability function
-			}
-			if (character == "Wes")
-			{
-				// Call Wes ability function
-			}
+			// Call spawnBullet function
+			cast(FlxG.state, PlayState).spawnBullet(x + 50, y);
+
+			// Flip canShoot
+			canShoot = false;
+
+			// Reset shootCooldown
+			shootCooldown.start(3, resetShoot, 1);
 		}
+	}
+
+	private function resetSPEED(timer:FlxTimer)
+	{
+		BASEVEL = 200;
+	}
+
+	private function boostSPEED()
+	{
+		// Change speed
+		BASEVEL = 1000;
+
+		// Start timer
+		speedChange.start(0.10, resetSPEED, 1);
+	}
+
+	private function resetDash(timer:FlxTimer)
+	{
+		canDash = true;
+	}
+
+	public function isDashReady():Bool
+	{
+		return canDash;
+	}
+
+	private function dash(gamepad:FlxGamepad)
+	{
+		if (canDash && gamepad.justPressed.A)
+		{
+			// Call boostSPEED
+			boostSPEED();
+
+			// Toggle canDash
+			canDash = false;
+			// Reset dashCooldown
+			dashCooldown.start(2, resetDash, 1);
+		}
+	}
+
+	private function useAbility() {}
+
+	public static function overlapsWithBullet(player:Player, bullet:Bullet)
+	{
+		// Kill player
+		player.kill();
+		// Kill bullet
+		bullet.kill();
 	}
 }

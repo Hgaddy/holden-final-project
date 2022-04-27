@@ -13,14 +13,21 @@ import player.Player;
 
 class Don extends Player
 {
+	// Ability variables
 	private var abilityCooldown:FlxTimer = new FlxTimer();
 	private var abilityCooldownLength:Int = 5;
 	private var abilityReady:Bool;
 
+	// Controller
+	var gamepad:FlxGamepad;
+
 	public function new(X:Float = 0, Y:Float = 0, playerGamepad:FlxGamepad)
 	{
 		// Call super
-		super(X, Y, playerGamepad, "DON");
+		super(X, Y);
+
+		// Assign gamepad
+		gamepad = playerGamepad;
 
 		// Start timer
 		abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
@@ -31,9 +38,16 @@ class Don extends Player
 
 	override public function update(elapsed:Float)
 	{
-		// Check if ability is ready
-		if (isAbilityReady() || gamepad.justPressed.LEFT_TRIGGER_BUTTON)
+		// If gamepad assigned
+		if (gamepad != null)
 		{
+			// Call move function
+			movePlayerGamepad(gamepad);
+			// Call shoot function
+			shoot(gamepad);
+			// Call dash function
+			dash(gamepad);
+			// Call ability function
 			useAbility();
 		}
 
@@ -51,12 +65,15 @@ class Don extends Player
 		return abilityReady;
 	}
 
-	private function useAbility()
+	override function useAbility()
 	{
-		// Reset cooldown timer
-		abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
+		// if (isAbilityReady() && gamepad.pressed.LEFT_TRIGGER_BUTTON)
+		// {
+		// 	// Reset cooldown timer
+		// 	abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
 
-		// Turn abilityReady to false
-		abilityReady = false;
+		// 	// Turn abilityReady to false
+		// 	abilityReady = false;
+		// }
 	}
 }

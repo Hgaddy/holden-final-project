@@ -34,7 +34,7 @@ class PlayState extends FlxState
 		gamepad2 = FlxG.gamepads.getByID(1);
 
 		// Create player
-		player1 = new Don(FlxG.width / 2 - 200, FlxG.height / 2, gamepad1);
+		player1 = new Wes(FlxG.width / 2 - 200, FlxG.height / 2, gamepad1);
 		player2 = new Don(FlxG.width / 2 + 200, FlxG.height / 2, gamepad2);
 
 		// Add bullets

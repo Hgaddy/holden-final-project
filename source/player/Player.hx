@@ -59,6 +59,9 @@ class Player extends FlxSprite
 		if (gamepad.pressed.DPAD_LEFT)
 		{
 			velocity.x = -BASEVEL;
+
+			// Set facing
+			facing = LEFT;
 		}
 
 		if (gamepad.pressed.DPAD_DOWN)
@@ -69,6 +72,9 @@ class Player extends FlxSprite
 		if (gamepad.pressed.DPAD_RIGHT)
 		{
 			velocity.x = BASEVEL;
+
+			// Set facing
+			facing = RIGHT;
 		}
 
 		// If released

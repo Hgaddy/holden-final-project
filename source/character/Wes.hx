@@ -6,7 +6,6 @@
 
 package character;
 
-import flixel.animation.FlxAnimation;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;

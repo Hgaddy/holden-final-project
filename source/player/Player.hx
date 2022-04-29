@@ -120,13 +120,17 @@ class Player extends FlxSprite
 		if (canShoot && gamepad.pressed.RIGHT_SHOULDER)
 		{
 			// Call spawnBullet function
-			cast(FlxG.state, PlayState).spawnBullet(x + 50, y);
+			cast(FlxG.state, PlayState).spawnBullet(
+				getMidpoint().x, 
+				getMidpoint().y,
+				gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90
+			);
 
 			// Flip canShoot
 			canShoot = false;
 
 			// Reset shootCooldown
-			shootCooldown.start(3, resetShoot, 1);
+			shootCooldown.start(.25, resetShoot, 1);
 		}
 	}
 

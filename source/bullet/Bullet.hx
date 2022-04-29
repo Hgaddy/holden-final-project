@@ -1,5 +1,7 @@
 package bullet;
 
+import flixel.FlxG;
+import flixel.math.FlxPoint;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 
@@ -21,16 +23,20 @@ class Bullet extends FlxSprite
 		setDirection(angle);
 	}
 
-	public function fire(X:Float = 0, Y:Float = 0)
+	public function fire(X:Float = 0, Y:Float = 0, angle)
 	{
-		x = X;
-		y = Y;
+		var startPosition = FlxPoint.weak(X + 50, Y).rotate(FlxPoint.weak(X, Y), angle);
+
+		reset(startPosition.x, startPosition.y);
+		setDirection(angle);
 	}
 
-	private function setDirection(angle)
+	private function setDirection(angle:Float)
 	{
 		velocity.x = SPEED;
 		velocity.y = 0;
+
+		velocity = velocity.rotate(FlxPoint.weak(), angle);
 	}
 
 	public function bounce(bounceDirection:Float = 0)

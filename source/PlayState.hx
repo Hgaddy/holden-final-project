@@ -177,9 +177,9 @@ class PlayState extends FlxState
 		FlxG.overlap(player2, bulletsPlayer1, Player.overlapsWithBullet);
 	}
 
-	public function spawnBullet(X:Float, Y:Float)
+	public function spawnBullet(X:Float, Y:Float, angle:Float)
 	{
 		var recycled:Bullet = bulletsPlayer1.add(bulletsPlayer1.recycle(Bullet));
-		recycled.fire(X, Y);
+		recycled.fire(X, Y, angle);
 	}
 }

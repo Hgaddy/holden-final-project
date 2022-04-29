@@ -33,7 +33,13 @@ class Don extends Player
 		abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
 
 		// Give graphic
-		makeGraphic(20, 20, FlxColor.WHITE);
+		loadGraphic(AssetPaths.DonStanding__png, true);
+		setFacingFlip(LEFT, true, false);
+		setFacingFlip(RIGHT, false, false);
+
+		// Animation
+		animation.add("Stand", [0, 1], 2, true);
+		animation.play("Stand");
 	}
 
 	override public function update(elapsed:Float)

@@ -173,8 +173,12 @@ class PlayState extends FlxState
 		super.update(elapsed);
 
 		// Bullet collision
-		FlxG.overlap(player1, bulletsPlayer2, Player.overlapsWithBullet);
+		FlxG.overlap(player1, bulletsPlayer1, Player.overlapsWithBullet);
 		FlxG.overlap(player2, bulletsPlayer1, Player.overlapsWithBullet);
+		FlxG.overlap(currentLevelCollision, bulletsPlayer1, Bullet.bounce);
+
+		// Wall collision
+		FlxG.collide(currentLevelCollision, player1);
 	}
 
 	public function spawnBullet(X:Float, Y:Float, angle:Float)

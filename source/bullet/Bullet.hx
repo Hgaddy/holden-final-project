@@ -1,14 +1,16 @@
 package bullet;
 
 import flixel.FlxG;
-import flixel.math.FlxPoint;
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.tile.FlxTile;
+import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 
 class Bullet extends FlxSprite
 {
 	// Bullet variables
-	public static var SPEED = 350;
+	public static var SPEED = 250;
 
 	private var bouncesLeft = 3;
 
@@ -39,21 +41,21 @@ class Bullet extends FlxSprite
 		velocity = velocity.rotate(FlxPoint.weak(), angle);
 	}
 
-	public function bounce(bounceDirection:Float = 0)
+	public static function bounce(collisionTile:FlxTile, bullet:Bullet)
 	{
-		if (bounceDirection == 0)
+		if (collisionTile.x == bullet.x + 10 || collisionTile.x + 16 == bullet.x)
 		{
 			// Flip x velocity
-			velocity.x = velocity.x * -1;
+			bullet.velocity.x = bullet.velocity.x * -1;
 			// Call decrement function
-			decrementBounces();
+			bullet.decrementBounces();
 		}
-		else
+		if (collisionTile.y == bullet.y + 10 || collisionTile.y + 16 == bullet.y)
 		{
 			// Flip y velocity
-			velocity.y = velocity.y * -1;
+			bullet.velocity.y = bullet.velocity.y * -1;
 			// Call decrement function
-			decrementBounces();
+			bullet.decrementBounces();
 		}
 	}
 

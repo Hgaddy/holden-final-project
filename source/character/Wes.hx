@@ -33,7 +33,7 @@ class Wes extends Player
 		abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
 
 		// Give graphic
-		loadGraphic(AssetPaths.WesStanding__png, true);
+		loadGraphic(AssetPaths.WesStanding__png, true, 20, 20);
 		setFacingFlip(LEFT, true, false);
 		setFacingFlip(RIGHT, false, false);
 

@@ -13,6 +13,8 @@ import character.Wes;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -25,6 +27,7 @@ class Player extends FlxSprite
 	public var MAXHEALTH:Int = 3;
 
 	// Shoot variables
+	public var bullets:FlxTypedGroup<Bullet>;
 	public var shootCooldown:FlxTimer = new FlxTimer();
 	public var canShoot:Bool = true;
 
@@ -40,6 +43,9 @@ class Player extends FlxSprite
 
 		// Change player variables
 		this.drag = BASEDRAG;
+
+		// Create bullet list
+		FlxG.state.add(bullets = new FlxTypedGroup<Bullet>(20));
 	}
 
 	override public function update(elapsed:Float)
@@ -119,13 +125,17 @@ class Player extends FlxSprite
 	{
 		if (canShoot && gamepad.pressed.RIGHT_SHOULDER)
 		{
-			// Call spawnBullet function
-			cast(FlxG.state, PlayState).spawnBullet(
-				getMidpoint().x, 
-				getMidpoint().y,
-				gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90
-			);
+			// Position and angle variables
+			var positionX:Float = getMidpoint().x;
+			var positionY:Float = getMidpoint().y;
+			var angle:Float = gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90;
 
+			// Recycle bullet
+			var recycled:Bullet = bullets.add(bullets.recycle(Bullet));
+
+			// Call fire function
+			recycled.fire(positionX, positionY, angle);
+			
 			// Flip canShoot
 			canShoot = false;
 

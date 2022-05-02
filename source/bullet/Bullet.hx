@@ -41,19 +41,33 @@ class Bullet extends FlxSprite
 		velocity = velocity.rotate(FlxPoint.weak(), angle);
 	}
 
-	public static function bounce(collisionTile:FlxTile, bullet:Bullet)
+	public static function bounce(tilemap:FlxTilemap, bullet:Bullet)
 	{
-		if (collisionTile.x == bullet.x + 10 || collisionTile.x + 16 == bullet.x)
+		if (bullet.justTouched(LEFT))
 		{
-			// Flip x velocity
-			bullet.velocity.x = bullet.velocity.x * -1;
+			// Set x velocity
+			bullet.velocity.x = SPEED;
 			// Call decrement function
 			bullet.decrementBounces();
 		}
-		if (collisionTile.y == bullet.y + 10 || collisionTile.y + 16 == bullet.y)
+		if (bullet.justTouched(UP))
 		{
-			// Flip y velocity
-			bullet.velocity.y = bullet.velocity.y * -1;
+			// Set y velocity
+			bullet.velocity.y = SPEED;
+			// Call decrement function
+			bullet.decrementBounces();
+		}
+		if (bullet.justTouched(RIGHT))
+		{
+			// Set x velocity
+			bullet.velocity.x = -SPEED;
+			// Call decrement function
+			bullet.decrementBounces();
+		}
+		if (bullet.justTouched(DOWN))
+		{
+			// Set y velocity
+			bullet.velocity.y = -SPEED;
 			// Call decrement function
 			bullet.decrementBounces();
 		}

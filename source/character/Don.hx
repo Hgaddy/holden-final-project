@@ -73,13 +73,13 @@ class Don extends Player
 
 	override function useAbility()
 	{
-		// if (isAbilityReady() && gamepad.pressed.LEFT_TRIGGER_BUTTON)
-		// {
-		// 	// Reset cooldown timer
-		// 	abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
+		if (abilityReady && gamepad.pressed.LEFT_SHOULDER)
+		{
+			// Reset cooldown timer
+			abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
 
-		// 	// Turn abilityReady to false
-		// 	abilityReady = false;
-		// }
+			// Turn abilityReady to false
+			abilityReady = false;
+		}
 	}
 }

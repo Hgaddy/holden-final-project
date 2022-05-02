@@ -31,10 +31,6 @@ class PlayState extends FlxState
 	var player1:Player;
 	var player2:Player;
 
-	// Bullet variables
-	public var bulletsPlayer1:FlxTypedGroup<Bullet>;
-	public var bulletsPlayer2:FlxTypedGroup<Bullet>;
-
 	override public function create()
 	{
 		super.create();
@@ -60,11 +56,7 @@ class PlayState extends FlxState
 
 		// Create player
 		player1 = new Wes(20, 20, gamepad1);
-		player2 = new Don(FlxG.width - 20, FlxG.height - 20, gamepad2);
-
-		// Add bullets
-		add(bulletsPlayer1 = new FlxTypedGroup<Bullet>(20));
-		add(bulletsPlayer2 = new FlxTypedGroup<Bullet>(20));
+		player2 = new Don(FlxG.width - 40, FlxG.height - 20, gamepad2);
 
 		// Add player
 		add(player1);
@@ -172,18 +164,9 @@ class PlayState extends FlxState
 		// Call super
 		super.update(elapsed);
 
-		// Bullet collision
-		FlxG.overlap(player1, bulletsPlayer1, Player.overlapsWithBullet);
-		FlxG.overlap(player2, bulletsPlayer1, Player.overlapsWithBullet);
-		FlxG.overlap(currentLevelCollision, bulletsPlayer1, Bullet.bounce);
-
 		// Wall collision
 		FlxG.collide(currentLevelCollision, player1);
-	}
-
-	public function spawnBullet(X:Float, Y:Float, angle:Float)
-	{
-		var recycled:Bullet = bulletsPlayer1.add(bulletsPlayer1.recycle(Bullet));
-		recycled.fire(X, Y, angle);
+		FlxG.collide(currentLevelCollision, player2);
+		FlxG.collide(currentLevelCollision, player1.bullets, Bullet.bounce);
 	}
 }

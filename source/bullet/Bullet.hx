@@ -12,7 +12,8 @@ class Bullet extends FlxSprite
 	// Bullet variables
 	public static var SPEED = 250;
 
-	private var bouncesLeft = 3;
+	public var bulletId:Int;
+	public var bouncesLeft = 4;
 
 	public function new(X:Float = 0, Y:Float = 0, ?angle:Float = 0)
 	{
@@ -27,9 +28,14 @@ class Bullet extends FlxSprite
 
 	public function fire(X:Float = 0, Y:Float = 0, angle)
 	{
-		var startPosition = FlxPoint.weak(X + 50, Y).rotate(FlxPoint.weak(X, Y), angle);
+		// Reset bounces
+		bouncesLeft = 4;
 
+		// Reset position
+		var startPosition = FlxPoint.weak(X, Y).rotate(FlxPoint.weak(X, Y), angle);
 		reset(startPosition.x, startPosition.y);
+
+		// Set new angle
 		setDirection(angle);
 	}
 

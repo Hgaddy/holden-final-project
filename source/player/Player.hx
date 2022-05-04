@@ -7,14 +7,12 @@
 package player;
 
 import bullet.Bullet;
-import character.Don;
-import character.Liz;
-import character.Wes;
+import character.Character;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.input.gamepad.FlxGamepad;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -25,6 +23,7 @@ class Player extends FlxSprite
 	public var BASEVEL:Int = 200;
 	public var BASEDRAG = new FlxPoint(2000, 2000);
 	public var MAXHEALTH:Int = 3;
+	public var playerId:Int;
 
 	// Shoot variables
 	public var bullets:FlxTypedGroup<Bullet>;
@@ -36,16 +35,17 @@ class Player extends FlxSprite
 	public var speedChange:FlxTimer = new FlxTimer();
 	public var canDash:Bool = true;
 
-	public function new(X:Float = 0, Y:Float = 0)
+	public function new(X:Float = 0, Y:Float = 0, playerBullets:FlxTypedGroup<Bullet>, playerId:Int)
 	{
 		// Call super
 		super(X, Y);
 
 		// Change player variables
+		this.playerId = playerId;
 		this.drag = BASEDRAG;
 
 		// Create bullet list
-		FlxG.state.add(bullets = new FlxTypedGroup<Bullet>(20));
+		bullets = playerBullets;
 	}
 
 	override public function update(elapsed:Float)
@@ -104,11 +104,6 @@ class Player extends FlxSprite
 		{
 			velocity.x = 0;
 		}
-
-		if (gamepad.justPressed.BACK)
-		{
-			FlxG.fullscreen = !FlxG.fullscreen;
-		}
 	}
 
 	private function resetShoot(timer:FlxTimer)
@@ -132,10 +127,11 @@ class Player extends FlxSprite
 
 			// Recycle bullet
 			var recycled:Bullet = bullets.add(bullets.recycle(Bullet));
+			recycled.bulletId = playerId;
 
 			// Call fire function
 			recycled.fire(positionX, positionY, angle);
-			
+
 			// Flip canShoot
 			canShoot = false;
 
@@ -182,13 +178,21 @@ class Player extends FlxSprite
 		}
 	}
 
-	private function useAbility() {}
-
 	public static function overlapsWithBullet(player:Player, bullet:Bullet)
 	{
-		// Kill player
-		player.kill();
-		// Kill bullet
-		bullet.kill();
+		if (bullet.bulletId == player.playerId && bullet.bouncesLeft < 4)
+		{
+			// Kill player
+			player.kill();
+			// Kill bullet
+			bullet.kill();
+		}
+		if (bullet.bulletId != player.playerId)
+		{
+			// Kill player
+			player.kill();
+			// Kill bullet
+			bullet.kill();
+		}
 	}
 }

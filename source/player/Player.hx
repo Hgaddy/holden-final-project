@@ -180,7 +180,7 @@ class Player extends FlxSprite
 
 	public static function overlapsWithBullet(player:Player, bullet:Bullet)
 	{
-		if (bullet.bulletId == player.playerId && bullet.bouncesLeft < 4)
+		if (bullet.bulletId == player.playerId && bullet.canHurtOwner)
 		{
 			// Kill player
 			player.kill();

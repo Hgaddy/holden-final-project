@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxTile;
 import flixel.tile.FlxTilemap;
+import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 
 class Bullet extends FlxSprite
@@ -13,14 +14,16 @@ class Bullet extends FlxSprite
 	public static var SPEED = 250;
 
 	public var bulletId:Int;
-	public var bouncesLeft = 4;
+	public var bouncesLeft:Int = 4;
+	public var hurtOwnerTimer:FlxTimer = new FlxTimer();
+	public var canHurtOwner:Bool;
 
 	public function new(X:Float = 0, Y:Float = 0, ?angle:Float = 0)
 	{
 		// Call super
 		super(X, Y);
 		// Make graphic
-		makeGraphic(10, 10, FlxColor.RED);
+		loadGraphic(AssetPaths.bullet__png, false, 5, 3);
 
 		// Set bullet direction
 		setDirection(angle);
@@ -28,8 +31,12 @@ class Bullet extends FlxSprite
 
 	public function fire(X:Float = 0, Y:Float = 0, angle)
 	{
-		// Reset bounces
+		// Reset variables
 		bouncesLeft = 4;
+		canHurtOwner = false;
+	
+		// Start timer
+		hurtOwnerTimer.start(1.5, setCanHurtOwner, 1);
 
 		// Reset position
 		var startPosition = FlxPoint.weak(X, Y).rotate(FlxPoint.weak(X, Y), angle);
@@ -45,6 +52,11 @@ class Bullet extends FlxSprite
 		velocity.y = 0;
 
 		velocity = velocity.rotate(FlxPoint.weak(), angle);
+	}
+
+	private function setCanHurtOwner(timer:FlxTimer)
+	{
+		canHurtOwner = true;
 	}
 
 	public static function bounce(tilemap:FlxTilemap, bullet:Bullet)

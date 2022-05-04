@@ -59,6 +59,7 @@ class PlayState extends FlxState
 
 		// Add bullets
 		add(allBullets);
+		add(allPlayers);
 	}
 
 	///////////////////
@@ -137,7 +138,6 @@ class PlayState extends FlxState
 			allPlayers.add(instantiatePlayer(playerEntity));
 			break;
 		}
-		add(allPlayers);
 
 		// // Victory message
 		// victoryMessage = instantiateVictoryMessage(level.l_Entities.all_Victory_Message[0]);
@@ -166,6 +166,11 @@ class PlayState extends FlxState
 		return bullets;
 	}
 
+	private function reloadLevel()
+	{
+		FlxG.resetState();
+	}
+
 	override public function update(elapsed:Float)
 	{
 		// Call super
@@ -181,6 +186,10 @@ class PlayState extends FlxState
 		if (FlxG.gamepads.anyJustPressed(BACK))
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
+		}
+		if (FlxG.gamepads.anyJustPressed(START))
+		{
+			reloadLevel();
 		}
 	}
 }

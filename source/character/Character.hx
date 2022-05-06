@@ -40,16 +40,17 @@ class Character extends Player
 		// Start timer
 		abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
 
-		if (character == "Don")
+		if (character == "Navy")
 		{
 			// Give graphic
-			loadGraphic(AssetPaths.DonStanding__png, true, 20, 20);
+			loadGraphic(AssetPaths.Navy__png, true, 16, 21);
 			setFacingFlip(LEFT, true, false);
 			setFacingFlip(RIGHT, false, false);
 
 			// Animation
-			animation.add("donStand", [0, 1], 2, true);
-			animation.play("donStand");
+			animation.add("navyStand", [0, 0, 0, 0, 1, 2], 8, true);
+			animation.add("navyWalk", [3, 4], 4, true);
+			animation.play("navyStand");
 		}
 		if (character == "Liz") {}
 		if (character == "Wes")
@@ -77,9 +78,19 @@ class Character extends Player
 			// Call dash function
 			dash(gamepad);
 
-			// Call ability function
-			if (character == "Don")
+			// Call character specifics
+			if (character == "Navy")
 			{
+				// Determine animation
+				if (isMoving == true)
+				{
+					animation.play("navyWalk");
+				}
+				else
+				{
+					animation.play("navyStand");
+				}
+				// Call ability function
 				donAbility();
 			}
 			if (character == "Liz")

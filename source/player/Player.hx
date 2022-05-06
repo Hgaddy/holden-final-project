@@ -24,6 +24,7 @@ class Player extends FlxSprite
 	public var BASEDRAG = new FlxPoint(2000, 2000);
 	public var MAXHEALTH:Int = 3;
 	public var playerId:Int;
+	public var isMoving:Bool;
 
 	// Shoot variables
 	public var bullets:FlxTypedGroup<Bullet>;
@@ -104,6 +105,15 @@ class Player extends FlxSprite
 		{
 			velocity.x = 0;
 		}
+
+		if (velocity.x == 0 && velocity.y == 0)
+		{
+			isMoving = false;
+		}
+		else
+		{
+			isMoving = true;
+		}
 	}
 
 	private function resetShoot(timer:FlxTimer)
@@ -151,7 +161,7 @@ class Player extends FlxSprite
 		BASEVEL = 1000;
 
 		// Start timer
-		speedChange.start(0.10, resetSPEED, 1);
+		speedChange.start(0.08, resetSPEED, 1);
 	}
 
 	private function resetDash(timer:FlxTimer)

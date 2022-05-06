@@ -147,7 +147,7 @@ class PlayState extends FlxState
 
 	private function instantiatePlayer(playerEntity:LdtkProject.Entity_Player):Player
 	{
-		return new Character(playerEntity.pixelX, playerEntity.pixelY, "Wes", playerEntity.f_Player_Id, givePlayerBullets(), gamepad1);
+		return new Character(playerEntity.pixelX, playerEntity.pixelY, "Navy", playerEntity.f_Player_Id, givePlayerBullets(), gamepad1);
 	}
 
 	// private function instantiateVictoryMessage(victoryMessageEntity:LdtkProject.Entity_Victory_Message):FlxText

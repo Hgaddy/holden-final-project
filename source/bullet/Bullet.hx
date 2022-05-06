@@ -5,8 +5,8 @@ import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxTile;
 import flixel.tile.FlxTilemap;
-import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class Bullet extends FlxSprite
 {
@@ -17,6 +17,8 @@ class Bullet extends FlxSprite
 	public var bouncesLeft:Int = 4;
 	public var hurtOwnerTimer:FlxTimer = new FlxTimer();
 	public var canHurtOwner:Bool;
+	public var previousX:Float;
+	public var previousY:Float;
 
 	public function new(X:Float = 0, Y:Float = 0, ?angle:Float = 0)
 	{
@@ -34,7 +36,7 @@ class Bullet extends FlxSprite
 		// Reset variables
 		bouncesLeft = 4;
 		canHurtOwner = false;
-	
+
 		// Start timer
 		hurtOwnerTimer.start(1.5, setCanHurtOwner, 1);
 
@@ -52,6 +54,9 @@ class Bullet extends FlxSprite
 		velocity.y = 0;
 
 		velocity = velocity.rotate(FlxPoint.weak(), angle);
+
+		previousX = velocity.x;
+		previousY = velocity.y;
 	}
 
 	private function setCanHurtOwner(timer:FlxTimer)
@@ -64,28 +69,32 @@ class Bullet extends FlxSprite
 		if (bullet.justTouched(LEFT))
 		{
 			// Set x velocity
-			bullet.velocity.x = SPEED;
+			bullet.velocity.x = bullet.previousX * -1;
+			bullet.previousX = bullet.velocity.x;
 			// Call decrement function
 			bullet.decrementBounces();
 		}
 		if (bullet.justTouched(UP))
 		{
 			// Set y velocity
-			bullet.velocity.y = SPEED;
+			bullet.velocity.y = bullet.previousY * -1;
+			bullet.previousY = bullet.velocity.y;
 			// Call decrement function
 			bullet.decrementBounces();
 		}
 		if (bullet.justTouched(RIGHT))
 		{
 			// Set x velocity
-			bullet.velocity.x = -SPEED;
+			bullet.velocity.x = bullet.previousX * -1;
+			bullet.previousX = bullet.velocity.x;
 			// Call decrement function
 			bullet.decrementBounces();
 		}
 		if (bullet.justTouched(DOWN))
 		{
 			// Set y velocity
-			bullet.velocity.y = -SPEED;
+			bullet.velocity.y = bullet.previousY * -1;
+			bullet.previousY = bullet.velocity.y;
 			// Call decrement function
 			bullet.decrementBounces();
 		}

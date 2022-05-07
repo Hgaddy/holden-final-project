@@ -6,7 +6,7 @@ import flixel.system.frontEnds.HTML5FrontEnd.FlxIOSDevice;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-class StartState extends FlxState
+class MenuState extends FlxState
 {
 	var titleText:FlxText;
 	var nextText:FlxText;

@@ -28,10 +28,14 @@ class StartState extends FlxState
 		nextText = new FlxText(20, 0, 0, "Press Start", 20);
 		nextText.screenCenter(XY);
 		add(nextText);
+
+		super.create();
 	}
 
 	override public function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
 		// Set fullscreen
 		if (FlxG.gamepads.anyJustPressed(BACK))
 		{

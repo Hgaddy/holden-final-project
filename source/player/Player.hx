@@ -142,6 +142,9 @@ class Player extends FlxSprite
 			// Call fire function
 			recycled.fire(positionX, positionY, angle);
 
+			// Play sound effect
+			FlxG.sound.play(AssetPaths.gunShot__wav, 100);
+
 			// Flip canShoot
 			canShoot = false;
 

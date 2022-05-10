@@ -53,17 +53,7 @@ class Character extends Player
 			animation.play("navyStand");
 		}
 		if (character == "Liz") {}
-		if (character == "Wes")
-		{
-			// Give graphic
-			loadGraphic(AssetPaths.WesStanding__png, true, 20, 20);
-			setFacingFlip(LEFT, true, false);
-			setFacingFlip(RIGHT, false, false);
-
-			// Animation
-			animation.add("wesStand", [0, 1], 2, true);
-			animation.play("wesStand");
-		}
+		if (character == "Wes") {}
 	}
 
 	override public function update(elapsed:Float)

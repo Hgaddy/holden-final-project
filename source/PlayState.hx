@@ -25,7 +25,7 @@ class PlayState extends FlxState
 	var allPlayers:FlxTypedGroup<Player>;
 	var allCharacterChoices:FlxGroup;
 	var allBullets:FlxGroup;
-	var allGamepads:FlxGroup;
+	var allGamepads:Array<FlxGamepad> = [];
 
 	// Controller variables
 	var gamepad1:FlxGamepad;
@@ -33,6 +33,7 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
+		// Call super
 		super.create();
 
 		// Initialize lists
@@ -41,6 +42,8 @@ class PlayState extends FlxState
 		// Get gamepads
 		gamepad1 = FlxG.gamepads.getByID(0);
 		gamepad2 = FlxG.gamepads.getByID(1);
+		allGamepads.push(gamepad1);
+		allGamepads.push(gamepad2);
 
 		project = new LdtkProject();
 
@@ -122,8 +125,9 @@ class PlayState extends FlxState
 		container.y = level.worldY;
 		add(container);
 
-		// Render layer "IntGrid"
+		// Render layers
 		level.l_Walls_IntGrid.render(container);
+		level.l_Floor.render(container);
 	}
 
 	private function loadEntities(project:LdtkProject, levelId:Int)

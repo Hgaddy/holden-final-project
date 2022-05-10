@@ -1,9 +1,6 @@
 package;
 
-import characterSprites.MossSprite;
-import characterSprites.NavySprite;
-import characterSprites.RoseSprite;
-import characterSprites.SandSprite;
+import characterSprites.CharacterSelector;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -26,10 +23,10 @@ class MenuState extends FlxState
 		}
 		// Create sprites
 		allSprites = new FlxSpriteGroup();
-		allSprites.add(new NavySprite(130, 300));
-		allSprites.add(new RoseSprite(230, 300));
-		allSprites.add(new MossSprite(330, 300));
-		allSprites.add(new SandSprite(430, 300));
+		allSprites.add(new CharacterSelector(130, 300, Moss));
+		allSprites.add(new CharacterSelector(230, 300, Navy));
+		allSprites.add(new CharacterSelector(330, 300, Rose));
+		allSprites.add(new CharacterSelector(430, 300, Sand));
 		add(allSprites);
 
 		// Create title

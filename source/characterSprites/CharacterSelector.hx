@@ -26,9 +26,9 @@ class CharacterSelector extends FlxSprite
         loadGraphic(newGraphic, true, 80, 105);
 
         // Make animation
-		animation.add("stand", [0, 0, 0, 0, 1, 2], 8, true);
-		// Play animation
-		animation.play("stand");
+        animation.add("stand", [0, 0, 0, 0, 1, 2], 8, true);
+        // Play animation
+        animation.play("stand");
     }
 
     private function set_type(newType:CharacterTypes):CharacterTypes {

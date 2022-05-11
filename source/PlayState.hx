@@ -27,6 +27,9 @@ class PlayState extends FlxState
 	var allBullets:FlxGroup;
 	var allGamepads:Array<FlxGamepad> = [];
 
+	// Tracking variables
+	var numPlayers:Int;
+
 	// Controller variables
 	var gamepad1:FlxGamepad;
 	var gamepad2:FlxGamepad;
@@ -63,6 +66,11 @@ class PlayState extends FlxState
 		// Add bullets
 		add(allBullets);
 		add(allPlayers);
+		// Give guns
+		for (player in allPlayers)
+		{
+			add(player.gun);
+		}
 	}
 
 	///////////////////
@@ -142,11 +150,6 @@ class PlayState extends FlxState
 			allPlayers.add(instantiatePlayer(playerEntity));
 			break;
 		}
-
-		// // Victory message
-		// victoryMessage = instantiateVictoryMessage(level.l_Entities.all_Victory_Message[0]);
-
-		// add(victoryMessage);
 	}
 
 	private function instantiatePlayer(playerEntity:LdtkProject.Entity_Player):Player

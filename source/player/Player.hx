@@ -27,6 +27,7 @@ class Player extends FlxSprite
 	public var isMoving:Bool;
 
 	// Shoot variables
+	public var gun:FlxSprite;
 	public var bullets:FlxTypedGroup<Bullet>;
 	public var shootCooldown:FlxTimer = new FlxTimer();
 	public var canShoot:Bool = true;
@@ -40,6 +41,8 @@ class Player extends FlxSprite
 	{
 		// Call super
 		super(X, Y);
+
+		gun = new FlxSprite(this.x, this.y, AssetPaths.gun__png);
 
 		// Change player variables
 		this.playerId = playerId;
@@ -70,9 +73,13 @@ class Player extends FlxSprite
 				facing = RIGHT;
 			}
 			// Set velocity
-			velocity.x = BASEVEL;
+			trace(gamepad.getAnalogAxes(LEFT_ANALOG_STICK).length);
+			velocity.x = BASEVEL * gamepad.getAnalogAxes(LEFT_ANALOG_STICK).length;
 			velocity.y = 0;
 			velocity = velocity.rotate(FlxPoint.weak(), angle);
+
+			// Move gun
+			moveGun(gamepad);
 
 			// Set isMoving
 			isMoving = true;
@@ -86,6 +93,16 @@ class Player extends FlxSprite
 			// Set isMoving
 			isMoving = false;
 		}
+	}
+
+	private function moveGun(gamepad:FlxGamepad)
+	{
+		// Set position
+		gun.x = x;
+		gun.y = y;
+
+		// Rotate gun
+
 	}
 
 	private function resetShoot(timer:FlxTimer)

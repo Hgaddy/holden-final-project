@@ -55,64 +55,36 @@ class Player extends FlxSprite
 		super.update(elapsed);
 	}
 
-	private function movePlayerGamepad(gamepad:FlxGamepad)
+	private function movePlayer(gamepad:FlxGamepad)
 	{
-		// If pressed
-		if (gamepad.pressed.DPAD_UP)
+		var angle:Float = gamepad.getAnalogAxes(LEFT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90;
+		if (!gamepad.getAnalogAxes(LEFT_ANALOG_STICK).isZero())
 		{
-			velocity.y = -BASEVEL;
-		}
-
-		if (gamepad.pressed.DPAD_LEFT)
-		{
-			velocity.x = -BASEVEL;
-
 			// Set facing
-			facing = LEFT;
-		}
-
-		if (gamepad.pressed.DPAD_DOWN)
-		{
-			velocity.y = BASEVEL;
-		}
-
-		if (gamepad.pressed.DPAD_RIGHT)
-		{
+			if (angle > 90 && angle <= 270)
+			{
+				facing = LEFT;
+			}
+			else
+			{
+				facing = RIGHT;
+			}
+			// Set velocity
 			velocity.x = BASEVEL;
-
-			// Set facing
-			facing = RIGHT;
-		}
-
-		// If released
-		if (gamepad.justReleased.DPAD_UP || gamepad.justReleased.DPAD_DOWN)
-		{
 			velocity.y = 0;
-		}
+			velocity = velocity.rotate(FlxPoint.weak(), angle);
 
-		if (gamepad.justReleased.DPAD_LEFT || gamepad.justReleased.DPAD_RIGHT)
-		{
-			velocity.x = 0;
-		}
-
-		// If both pressed
-		if (gamepad.pressed.DPAD_UP && gamepad.pressed.DPAD_DOWN)
-		{
-			velocity.y = 0;
-		}
-
-		if (gamepad.pressed.DPAD_LEFT && gamepad.pressed.DPAD_RIGHT)
-		{
-			velocity.x = 0;
-		}
-
-		if (velocity.x == 0 && velocity.y == 0)
-		{
-			isMoving = false;
+			// Set isMoving
+			isMoving = true;
 		}
 		else
 		{
-			isMoving = true;
+			// Set velocity
+			velocity.x = 0;
+			velocity.y = 0;
+
+			// Set isMoving
+			isMoving = false;
 		}
 	}
 

@@ -62,7 +62,7 @@ class Character extends Player
 		if (gamepad != null)
 		{
 			// Call move function
-			movePlayerGamepad(gamepad);
+			movePlayer(gamepad);
 			// Call shoot function
 			shoot(gamepad);
 			// Call dash function

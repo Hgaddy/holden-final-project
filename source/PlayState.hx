@@ -3,6 +3,7 @@ package;
 import bullet.Bullet;
 import character.Character;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
@@ -11,6 +12,7 @@ import flixel.input.gamepad.FlxGamepadManager;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 import ldtk.Level;
+import openfl.display.Tilemap;
 import player.Player;
 
 class PlayState extends FlxState
@@ -23,6 +25,7 @@ class PlayState extends FlxState
 
 	// All lists
 	var allPlayers:FlxTypedGroup<Player>;
+	var allGuns:FlxGroup;
 	var allCharacterChoices:FlxGroup;
 	var allBullets:FlxGroup;
 	var allGamepads:Array<FlxGamepad> = [];
@@ -46,6 +49,7 @@ class PlayState extends FlxState
 
 		// Initialize lists
 		allBullets = new FlxGroup();
+		allGuns = new FlxGroup();
 
 		// Get gamepads
 		gamepad1 = FlxG.gamepads.getByID(0);
@@ -74,8 +78,10 @@ class PlayState extends FlxState
 		// Give guns
 		for (player in allPlayers)
 		{
+			allGuns.add(player.gun);
 			add(player.gun);
 		}
+		trace(allGuns.members);
 	}
 
 	///////////////////
@@ -195,6 +201,7 @@ class PlayState extends FlxState
 
 		// Wall collision
 		FlxG.collide(currentLevelCollision, allPlayers);
+		FlxG.collide(currentLevelCollision, allGuns, (tilemap:Dynamic, gun:Dynamic) -> trace(gun));
 		FlxG.collide(currentLevelCollision, allBullets, Bullet.bounce);
 
 		// Player and bullet collision

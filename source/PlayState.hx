@@ -25,7 +25,7 @@ class PlayState extends FlxState
 
 	// All lists
 	var allPlayers:FlxTypedGroup<Player>;
-	var allGuns:FlxGroup;
+	var allGuns:FlxTypedGroup<FlxSprite>;
 	var allCharacterChoices:FlxGroup;
 	var allBullets:FlxGroup;
 	var allGamepads:Array<FlxGamepad> = [];
@@ -49,7 +49,7 @@ class PlayState extends FlxState
 
 		// Initialize lists
 		allBullets = new FlxGroup();
-		allGuns = new FlxGroup();
+		allGuns = new FlxTypedGroup();
 
 		// Get gamepads
 		gamepad1 = FlxG.gamepads.getByID(0);

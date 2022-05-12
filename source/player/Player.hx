@@ -49,7 +49,6 @@ class Player extends FlxSprite
 
 		// Set up gun
 		gun = new FlxSprite(this.x, this.y, AssetPaths.gun__png);
-		this.centerOrigin();
 		gun.setFacingFlip(LEFT, false, true);
 		gun.setFacingFlip(RIGHT, false, false);
 
@@ -137,8 +136,8 @@ class Player extends FlxSprite
 		if (canShoot && gamepad.pressed.RIGHT_SHOULDER)
 		{
 			// Position and angle variables
-			var positionX:Float = gun.getMidpoint().x;
-			var positionY:Float = gun.getMidpoint().y - 3;
+			var positionX:Float = x + 4;
+			var positionY:Float = y + 12;
 			var angle:Float = gun.angle;
 
 			// Recycle bullet

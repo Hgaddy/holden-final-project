@@ -34,6 +34,11 @@ class PlayState extends FlxState
 	var gamepad1:FlxGamepad;
 	var gamepad2:FlxGamepad;
 
+	public function new()
+	{
+		super();
+	}
+
 	override public function create()
 	{
 		// Call super
@@ -150,6 +155,11 @@ class PlayState extends FlxState
 			allPlayers.add(instantiatePlayer(playerEntity));
 			break;
 		}
+
+		// // Victory message
+		// victoryMessage = instantiateVictoryMessage(level.l_Entities.all_Victory_Message[0]);
+
+		// add(victoryMessage);
 	}
 
 	private function instantiatePlayer(playerEntity:LdtkProject.Entity_Player):Player

@@ -26,8 +26,13 @@ class Player extends FlxSprite
 	public var playerId:Int;
 	public var isMoving:Bool;
 
-	// Shoot variables
+	// Gun variables
 	public var gun:FlxSprite;
+
+	private var gunPreviousX:Float;
+	private var gunPreviousY:Float;
+
+	// Shoot variables
 	public var bullets:FlxTypedGroup<Bullet>;
 	public var shootCooldown:FlxTimer = new FlxTimer();
 	public var canShoot:Bool = true;
@@ -42,7 +47,11 @@ class Player extends FlxSprite
 		// Call super
 		super(X, Y);
 
+		// Set up gun
 		gun = new FlxSprite(this.x, this.y, AssetPaths.gun__png);
+		this.centerOrigin();
+		gun.setFacingFlip(LEFT, false, true);
+		gun.setFacingFlip(RIGHT, false, false);
 
 		// Change player variables
 		this.playerId = playerId;
@@ -73,13 +82,9 @@ class Player extends FlxSprite
 				facing = RIGHT;
 			}
 			// Set velocity
-			trace(gamepad.getAnalogAxes(LEFT_ANALOG_STICK).length);
 			velocity.x = BASEVEL * gamepad.getAnalogAxes(LEFT_ANALOG_STICK).length;
 			velocity.y = 0;
 			velocity = velocity.rotate(FlxPoint.weak(), angle);
-
-			// Move gun
-			moveGun(gamepad);
 
 			// Set isMoving
 			isMoving = true;
@@ -97,12 +102,24 @@ class Player extends FlxSprite
 
 	private function moveGun(gamepad:FlxGamepad)
 	{
+		if (!gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).isZero())
+		{
+			// Rotate gun
+			gun.angle = gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90;
+		}
+
 		// Set position
-		gun.x = x;
-		gun.y = y;
-
-		// Rotate gun
-
+		gun.x = x + 2 + (10 * gamepad.getXAxis(RIGHT_ANALOG_STICK));
+		gun.y = y + 12 + (10 * gamepad.getYAxis(RIGHT_ANALOG_STICK));
+		// Set facing
+		if (gun.angle > 90 && gun.angle < 270)
+		{
+			gun.facing = LEFT;
+		}
+		if (gun.angle < 90 || gun.angle > 270)
+		{
+			gun.facing = RIGHT;
+		}
 	}
 
 	private function resetShoot(timer:FlxTimer)
@@ -120,9 +137,9 @@ class Player extends FlxSprite
 		if (canShoot && gamepad.pressed.RIGHT_SHOULDER)
 		{
 			// Position and angle variables
-			var positionX:Float = getMidpoint().x;
-			var positionY:Float = getMidpoint().y;
-			var angle:Float = gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90;
+			var positionX:Float = gun.getMidpoint().x;
+			var positionY:Float = gun.getMidpoint().y - 3;
+			var angle:Float = gun.angle;
 
 			// Recycle bullet
 			var recycled:Bullet = bullets.add(bullets.recycle(Bullet));

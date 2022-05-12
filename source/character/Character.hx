@@ -63,6 +63,8 @@ class Character extends Player
 		{
 			// Call move function
 			movePlayer(gamepad);
+			// Move gun
+			moveGun(gamepad);
 			// Call shoot function
 			shoot(gamepad);
 			// Call dash function

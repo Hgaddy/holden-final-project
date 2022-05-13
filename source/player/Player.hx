@@ -20,6 +20,7 @@ import flixel.util.FlxTimer;
 class Player extends FlxSprite
 {
 	// Player variables
+	public var canPlay:Bool = true;
 	public var BASEVEL:Int = 200;
 	public var BASEDRAG = new FlxPoint(2000, 2000);
 	public var MAXHEALTH:Int = 3;
@@ -136,7 +137,7 @@ class Player extends FlxSprite
 		if (canShoot && gamepad.pressed.RIGHT_SHOULDER)
 		{
 			// Position and angle variables
-			var positionX:Float = x + 4;
+			var positionX:Float = x + 5;
 			var positionY:Float = y + 12;
 			var angle:Float = gun.angle;
 

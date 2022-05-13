@@ -117,7 +117,7 @@ class PlayState extends FlxState
 
 		// Use array of 1s and 0s to create an FlxTilemap for collision
 		var collisionMap = new FlxTilemap();
-		collisionMap.setPosition(level.worldX, level.worldY);
+		collisionMap.setPosition(level.worldX + 107, level.worldY);
 		collisionMap.loadMapFromArray(mapData, level.l_Walls_IntGrid.cWid, level.l_Walls_IntGrid.cHei, AssetPaths.collision__png, 16, 16);
 
 		// We don't care about making the map drawn or updated
@@ -140,7 +140,7 @@ class PlayState extends FlxState
 		var container = new FlxSpriteGroup();
 
 		// Place it using level world coordinates (in pixels)
-		container.x = level.worldX;
+		container.x = level.worldX + 107;
 		container.y = level.worldY;
 		add(container);
 
@@ -170,7 +170,7 @@ class PlayState extends FlxState
 
 	private function instantiatePlayer(playerEntity:LdtkProject.Entity_Player):Player
 	{
-		return new Character(playerEntity.pixelX, playerEntity.pixelY, "Navy", playerEntity.f_Player_Id, givePlayerBullets(), gamepad1);
+		return new Character(playerEntity.pixelX + 107, playerEntity.pixelY, "Navy", playerEntity.f_Player_Id, givePlayerBullets(), gamepad1);
 	}
 
 	// private function instantiateVictoryMessage(victoryMessageEntity:LdtkProject.Entity_Victory_Message):FlxText
@@ -201,7 +201,7 @@ class PlayState extends FlxState
 
 		// Wall collision
 		FlxG.collide(currentLevelCollision, allPlayers);
-		FlxG.collide(currentLevelCollision, allGuns, (tilemap:Dynamic, gun:Dynamic) -> trace(gun));
+		// FlxG.collide(currentLevelCollision, allGuns, (tilemap:Dynamic, gun:Dynamic) -> trace(gun));
 		FlxG.collide(currentLevelCollision, allBullets, Bullet.bounce);
 
 		// Player and bullet collision

@@ -61,14 +61,17 @@ class Character extends Player
 		// If gamepad assigned
 		if (gamepad != null)
 		{
-			// Call move function
-			movePlayer(gamepad);
 			// Move gun
 			moveGun(gamepad);
-			// Call shoot function
-			shoot(gamepad);
-			// Call dash function
-			dash(gamepad);
+			if (canPlay)
+			{
+				// Call move function
+				movePlayer(gamepad);
+				// Call shoot function
+				shoot(gamepad);
+				// Call dash function
+				dash(gamepad);
+			}
 
 			// Call character specifics
 			if (character == "Navy")

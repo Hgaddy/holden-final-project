@@ -7,8 +7,10 @@
 package character;
 
 import bullet.Bullet;
+import character.CharacterTypes;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import player.Player;
@@ -16,7 +18,10 @@ import player.Player;
 class Character extends Player
 {
 	// Which character and ID
-	var character:String;
+	public var character:CharacterTypes;
+
+	// Graphic access
+	public var newGraphic:FlxGraphicAsset;
 
 	// Ability variables
 	private var abilityCooldown:FlxTimer = new FlxTimer();
@@ -26,34 +31,40 @@ class Character extends Player
 	// Controller
 	var gamepad:FlxGamepad;
 
-	public function new(X:Float = 0, Y:Float = 0, chosenCharacter:String, playerId:Int = 0, playerBullets:FlxTypedGroup<Bullet>, playerGamepad:FlxGamepad)
+	public function new(X:Float = 0, Y:Float = 0, type:CharacterTypes = CharacterTypes.Moss, playerId:Int = 0, playerBullets:FlxTypedGroup<Bullet>,
+			playerGamepad:FlxGamepad)
 	{
-		// Assign chosen character and ID
-		character = chosenCharacter;
+		// Assign chosen character
+		character = type;
 
 		// Call super
 		super(X, Y, playerBullets, playerId);
+
+		// Get graphic
+		switch (character)
+		{
+			case Navy:
+				newGraphic = AssetPaths.Navy__png;
+			case Moss:
+				newGraphic = AssetPaths.Moss__png;
+			case Rose:
+				newGraphic = AssetPaths.Rose__png;
+			case Sand:
+				newGraphic = AssetPaths.Sand__png;
+		}
+		loadGraphic(newGraphic, true, 16, 21);
+
+		// Make animation
+		animation.add("stand", [0, 0, 0, 0, 1, 2], 8, true);
+		animation.add("walk", [3, 4], 4, true);
+		// Play animation
+		animation.play("stand");
 
 		// Assign gamepad
 		gamepad = playerGamepad;
 
 		// Start timer
 		abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
-
-		if (character == "Navy")
-		{
-			// Give graphic
-			loadGraphic(AssetPaths.Navy__png, true, 16, 21);
-			setFacingFlip(LEFT, true, false);
-			setFacingFlip(RIGHT, false, false);
-
-			// Animation
-			animation.add("navyStand", [0, 0, 0, 0, 1, 2], 8, true);
-			animation.add("navyWalk", [3, 4], 4, true);
-			animation.play("navyStand");
-		}
-		if (character == "Liz") {}
-		if (character == "Wes") {}
 	}
 
 	override public function update(elapsed:Float)
@@ -73,29 +84,28 @@ class Character extends Player
 				dash(gamepad);
 			}
 
-			// Call character specifics
-			if (character == "Navy")
+			// Call character ability
+			switch (character)
 			{
-				// Determine animation
-				if (isMoving == true)
-				{
-					animation.play("navyWalk");
-				}
-				else
-				{
-					animation.play("navyStand");
-				}
-				// Call ability function
-				donAbility();
+				case Navy:
+					navyAbility();
+				case Moss:
+					mossAbility();
+				case Rose:
+					roseAbility();
+				case Sand:
+					sandAbility();
 			}
-			if (character == "Liz")
-			{
-				lizAbility();
-			}
-			if (character == "Wes")
-			{
-				wesAbility();
-			}
+		}
+
+		// Determine animation
+		if (isMoving == true)
+		{
+			animation.play("walk");
+		}
+		else
+		{
+			animation.play("stand");
 		}
 
 		// Call super
@@ -112,7 +122,7 @@ class Character extends Player
 		return abilityReady;
 	}
 
-	private function donAbility()
+	private function navyAbility()
 	{
 		if (abilityReady && gamepad.pressed.LEFT_SHOULDER)
 		{
@@ -124,7 +134,9 @@ class Character extends Player
 		}
 	}
 
-	private function lizAbility() {}
+	private function mossAbility() {}
 
-	private function wesAbility() {}
+	private function roseAbility() {}
+
+	private function sandAbility() {}
 }

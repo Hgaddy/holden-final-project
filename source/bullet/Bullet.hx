@@ -11,7 +11,7 @@ import flixel.util.FlxTimer;
 class Bullet extends FlxSprite
 {
 	// Bullet variables
-	public static var SPEED = 250;
+	public static var SPEED = 500;
 
 	public var bulletId:Int;
 	public var bouncesLeft:Int = 4;

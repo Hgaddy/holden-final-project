@@ -1,35 +1,48 @@
 package;
 
-import characterSprites.MossSprite;
-import characterSprites.NavySprite;
-import characterSprites.RoseSprite;
-import characterSprites.SandSprite;
+import character.CharacterSelector;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class MenuState extends FlxState
 {
+	// Background
+	var backdrop:FlxBackdrop;
+
+	// Music start timer
+	var musicStartTimer:FlxTimer = new FlxTimer();
+
+	// Text
 	var titleText:FlxText;
 	var nextText:FlxText;
+
+	// Sprites
 	var allSprites:FlxSpriteGroup;
 
 	override public function create()
 	{
+		// Background
+		backdrop = new FlxBackdrop(AssetPaths.MenuBackground__png, 1, 0, true, false, 0, 0);
+		backdrop.velocity.set(-100, 0);
+		add(backdrop);
+
 		if (FlxG.sound.music == null) // don't restart the music if it's already playing
 		{
-			// Start music
-			// FlxG.sound.playMusic(AssetPaths., 0.8, true);
+			// Start music after delay
+			musicStartTimer.start(0.48, playMusic, 1);
 		}
 		// Create sprites
 		allSprites = new FlxSpriteGroup();
-		allSprites.add(new NavySprite(130, 300));
-		allSprites.add(new RoseSprite(230, 300));
-		allSprites.add(new MossSprite(330, 300));
-		allSprites.add(new SandSprite(430, 300));
+		allSprites.add(new CharacterSelector(FlxG.width / 2 - 190, 300, Moss));
+		allSprites.add(new CharacterSelector(FlxG.width / 2 - 90, 300, Navy));
+		allSprites.add(new CharacterSelector(FlxG.width / 2 + 10, 300, Rose));
+		allSprites.add(new CharacterSelector(FlxG.width / 2 + 110, 300, Sand));
 		add(allSprites);
 
 		// Create title
@@ -46,12 +59,17 @@ class MenuState extends FlxState
 		super.create();
 	}
 
+	private function playMusic(timer:FlxTimer)
+	{
+		FlxG.sound.playMusic(AssetPaths.menuMusic__wav, 0.8, true);
+	}
+
 	private function nextState()
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 0.33, false, function()
 		{
 			// FlxG.sound.music.stop();
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new CharacterState());
 		});
 	}
 

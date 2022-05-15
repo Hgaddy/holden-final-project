@@ -1,155 +1,145 @@
 package;
 
-import characterSprites.MossSprite;
-import characterSprites.NavySprite;
-import characterSprites.RoseSprite;
-import characterSprites.SandSprite;
+import character.CharacterSelector;
+import character.CharacterTypes;
+import flixel.FlxBasic;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 
 class CharacterState extends FlxState
 {
-	// Needed lists
-	var allGamepads:Array<FlxGamepad> = [];
-	var characterChoices:FlxGroup;
+	// Background
+	var backdrop:FlxBackdrop;
 
-	// Sprite lists
-	var allCharacterPositions:Array<Int>;
+	// Needed lists
+	private var allGamepads:Array<FlxGamepad> = [];
+	private var arePlayersReady:Array<Int> = [0, 0, 0, 0];
 
 	// Num players
-	var numPlayers:Int = 4;
+	var numPlayers:Int = 0;
 
 	// Chosen characters
-	var character1:String;
-	var character1Sprite:FlxSprite;
-	var character2:String;
-	var character2Sprite:FlxSprite;
-	var character3:String;
-	var character3Sprite:FlxSprite;
-	var character4:String;
-	var character4Sprite:FlxSprite;
+	private var characterTypes:Array<CharacterTypes> = CharacterTypes.createAll();
+	private var characterChoices:Array<CharacterTypes> = [];
+	private var characterSelectors:FlxTypedGroup<CharacterSelector>;
 
 	override public function create()
 	{
 		// Call super
 		super.create();
 
+		// Background
+		backdrop = new FlxBackdrop(AssetPaths.MenuBackground__png, 1, 0, true, false, 0, 0);
+		backdrop.velocity.set(-100, 0);
+		add(backdrop);
+
 		// Fade in
 		FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
 
+		// Set up controllers
+		initControllers();
+
+		// Set up numPlayers
+		initNumPlayers();
+
 		// Set up choice panels
-		allCharacterPositions = [0, 1, 2, 3];
-		character1Sprite = new NavySprite(100, 100);
-		add(character1Sprite);
-		character2Sprite = new RoseSprite(460, 100);
-		add(character2Sprite);
-		character3Sprite = new MossSprite(100, 275);
-		add(character3Sprite);
-		character4Sprite = new SandSprite(460, 275);
-		add(character4Sprite);
+		characterSelectors = initCharacterSelectors();
+		add(characterSelectors);
 	}
 
-	private function changeSprite(direction:Int, sprite:FlxSprite, position:Int)
+	private function initControllers()
 	{
-		// Which character
-		var whichSprite:FlxSprite = sprite;
-		var whichPosition:Int = position;
-		// Update characterPosition
-		if (direction == -1)
+		for (i in 0...3)
 		{
-			allCharacterPositions[whichPosition]--;
-		}
-		else
-		{
-			allCharacterPositions[whichPosition]++;
-		}
-		// If outside of range
-		if (allCharacterPositions[whichPosition] == -1)
-		{
-			allCharacterPositions[whichPosition] = 3;
-		}
-		if (allCharacterPositions[whichPosition] == 4)
-		{
-			allCharacterPositions[whichPosition] = 0;
-		}
-
-		// Kill old instances
-		whichSprite.kill();
-		// Add new sprite
-		if (allCharacterPositions[whichPosition] == 3)
-		{
-			whichSprite = new SandSprite(findXPosition(whichPosition), findYPosition(whichPosition));
-			whichSprite.revive();
-			add(whichSprite);
-			return;
-		}
-		if (allCharacterPositions[whichPosition] == 2)
-		{
-			whichSprite = new MossSprite(findXPosition(whichPosition), findYPosition(whichPosition));
-			whichSprite.revive();
-			add(whichSprite);
-			return;
-		}
-		if (allCharacterPositions[whichPosition] == 1)
-		{
-			whichSprite = new RoseSprite(findXPosition(whichPosition), findYPosition(whichPosition));
-			whichSprite.revive();
-			add(whichSprite);
-			return;
-		}
-		if (allCharacterPositions[whichPosition] == 0)
-		{
-			whichSprite = new NavySprite(findXPosition(whichPosition), findYPosition(whichPosition));
-			whichSprite.revive();
-			add(whichSprite);
-			return;
+			allGamepads.push(FlxG.gamepads.getByID(i));
 		}
 	}
 
-	private function findXPosition(positionX:Int)
+	private function initNumPlayers()
 	{
-		var result:Int = 0;
-		switch (positionX)
+		for (i in 0...3)
 		{
-			case 0:
-				result = 100;
-			case 1:
-				result = 460;
-			case 2:
-				result = 100;
-			case 3:
-				result = 460;
+			if (allGamepads[i] != null)
+			{
+				// Increment numPlayers
+				numPlayers++;
+			}
+			else
+			{
+				// Leave loop
+				break;
+			}
+		}
+	}
+
+	private function initCharacterSelectors():FlxTypedGroup<CharacterSelector>
+	{
+		var result = new FlxTypedGroup<CharacterSelector>(4);
+		var startingPositions:Array<FlxPoint> = [
+			FlxPoint.weak(100, 100),
+			FlxPoint.weak(460, 100),
+			FlxPoint.weak(100, 275),
+			FlxPoint.weak(460, 275)
+		];
+		for (i in 0...numPlayers)
+		{
+			result.add(new CharacterSelector(startingPositions[i].x, startingPositions[i].y, characterTypes[i]));
 		}
 		return result;
 	}
 
-	private function findYPosition(positionY:Int)
+	private function changeSprite(changeBy:Int, characterSelector:CharacterSelector)
 	{
-		var result:Int = 0;
-		switch (positionY)
+		var currentTypeIndex = characterTypes.indexOf(characterSelector.type);
+		var newTypeIndex = currentTypeIndex + changeBy;
+
+		// handle wrapping
+		newTypeIndex = newTypeIndex % characterTypes.length;
+		while (newTypeIndex < 0) // This is kinda overkill, but it handles weird cases successfully
 		{
-			case 0:
-				result = 100;
-			case 1:
-				result = 100;
-			case 2:
-				result = 275;
-			case 3:
-				result = 275;
+			newTypeIndex += characterTypes.length;
 		}
-		return result;
+
+		characterSelector.type = characterTypes[newTypeIndex];
+	}
+
+	private function lockChoice(ID:Int, characterSelector:CharacterSelector)
+	{
+		characterChoices[ID] = characterSelector.type;
+		arePlayersReady[ID] = 1;
+	}
+
+	private function undoChoice(ID:Int)
+	{
+		arePlayersReady[ID] = 0;
 	}
 
 	private function nextState()
 	{
+		for (i in 0...numPlayers)
+		{
+			if (arePlayersReady[i] == 1)
+			{
+				continue;
+			}
+			else
+			{
+				return;
+			}
+		}
+		// Stop music
+		FlxG.sound.music.stop();
+		// Fade to next
 		FlxG.camera.fade(FlxColor.BLACK, 0.33, false, function()
 		{
 			// FlxG.sound.music.stop();
-			FlxG.switchState(new CharacterState());
+			// FlxG.switchState(new PlayState());
+			FlxG.switchState(new PlayState(allGamepads, characterChoices, numPlayers));
 		});
 	}
 
@@ -159,19 +149,39 @@ class CharacterState extends FlxState
 		super.update(elapsed);
 
 		// Call change function
-		if (FlxG.gamepads.anyJustPressed(DPAD_LEFT))
+		for (i in 0...numPlayers)
 		{
-			changeSprite(-1, character1Sprite, 0);
-		}
-		if (FlxG.gamepads.anyJustPressed(DPAD_RIGHT))
-		{
-			changeSprite(1, character1Sprite, 0);
+			// Check left
+			if (allGamepads[i].justPressed.DPAD_LEFT && arePlayersReady[i] != 1)
+			{
+				changeSprite(-1, characterSelectors.members[i]);
+			}
+			// Check right
+			if (allGamepads[i].justPressed.DPAD_RIGHT && arePlayersReady[i] != 1)
+			{
+				changeSprite(1, characterSelectors.members[i]);
+			}
+			// If A pressed
+			if (allGamepads[i].justPressed.A)
+			{
+				lockChoice(i, characterSelectors.members[i]);
+			}
+			// If B pressed
+			if (allGamepads[i].justPressed.B)
+			{
+				undoChoice(i);
+			}
 		}
 
 		// Set fullscreen
 		if (FlxG.gamepads.anyJustPressed(BACK))
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
+		}
+
+		if (FlxG.gamepads.anyJustPressed(START))
+		{
+			nextState();
 		}
 	}
 }

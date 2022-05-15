@@ -10,6 +10,7 @@ import bullet.Bullet;
 import character.Character;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
@@ -20,7 +21,7 @@ import flixel.util.FlxTimer;
 class Player extends FlxSprite
 {
 	// Player variables
-	public var canPlay:Bool = true;
+	public var canPlay:Bool = false;
 	public var BASEVEL:Int = 200;
 	public var BASEDRAG = new FlxPoint(2000, 2000);
 	public var MAXHEALTH:Int = 3;
@@ -41,7 +42,9 @@ class Player extends FlxSprite
 	// Dash variables
 	public var dashCooldown:FlxTimer = new FlxTimer();
 	public var speedChange:FlxTimer = new FlxTimer();
+	public var trailOffTimer:FlxTimer = new FlxTimer();
 	public var canDash:Bool = true;
+	public var trail:FlxTrail;
 
 	public function new(X:Float = 0, Y:Float = 0, playerBullets:FlxTypedGroup<Bullet>, playerId:Int)
 	{
@@ -107,10 +110,11 @@ class Player extends FlxSprite
 			// Rotate gun
 			gun.angle = gamepad.getAnalogAxes(RIGHT_ANALOG_STICK).angleBetween(FlxPoint.weak()) + 90;
 		}
-
 		// Set position
 		gun.x = x + 2 + (10 * gamepad.getXAxis(RIGHT_ANALOG_STICK));
 		gun.y = y + 12 + (10 * gamepad.getYAxis(RIGHT_ANALOG_STICK));
+		gun.velocity = velocity;
+
 		// Set facing
 		if (gun.angle > 90 && gun.angle < 270)
 		{
@@ -173,6 +177,17 @@ class Player extends FlxSprite
 		speedChange.start(0.08, resetSPEED, 1);
 	}
 
+	public function trailOn()
+	{
+		trail.revive();
+		trail.resetTrail();
+	}
+
+	private function trailOff(timer:FlxTimer)
+	{
+		trail.kill();
+	}
+
 	private function resetDash(timer:FlxTimer)
 	{
 		canDash = true;
@@ -189,6 +204,10 @@ class Player extends FlxSprite
 		{
 			// Call boostSPEED
 			boostSPEED();
+			// Start trail
+			trailOn();
+			// Turn trail off timer
+			trailOffTimer.start(0.08, trailOff, 1);
 
 			// Toggle canDash
 			canDash = false;
@@ -203,6 +222,8 @@ class Player extends FlxSprite
 		{
 			// Kill player
 			player.kill();
+			// Kill player gun
+			player.gun.kill();
 			// Kill bullet
 			bullet.kill();
 		}
@@ -210,6 +231,8 @@ class Player extends FlxSprite
 		{
 			// Kill player
 			player.kill();
+			// Kill player gun
+			player.gun.kill();
 			// Kill bullet
 			bullet.kill();
 		}

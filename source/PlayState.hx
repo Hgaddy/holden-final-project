@@ -11,8 +11,10 @@ import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadManager;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import ldtk.Level;
@@ -32,6 +34,7 @@ class PlayState extends FlxState
 	var allPlayers:FlxTypedGroup<Player>;
 	var allGuns:FlxTypedGroup<FlxSprite>;
 	var allTrails:FlxTypedGroup<FlxTrail>;
+	var allBars:FlxTypedGroup<FlxBar>;
 	var characterChoices:Array<CharacterTypes> = [];
 	var allBullets:FlxGroup;
 	var allGamepads:Array<FlxGamepad> = [];
@@ -63,8 +66,9 @@ class PlayState extends FlxState
 
 		// Initialize lists
 		allBullets = new FlxGroup();
-		allGuns = new FlxTypedGroup();
 		allTrails = new FlxTypedGroup();
+		allBars = new FlxTypedGroup();
+		allGuns = new FlxTypedGroup();
 
 		project = new LdtkProject();
 
@@ -81,10 +85,14 @@ class PlayState extends FlxState
 		// Get collision for level
 		currentLevelCollision = levelsCollision.get(currentLevel.uid);
 
-		// Add bullets
+		// Add trails
 		add(allTrails);
+		// Add bullets
 		add(allBullets);
+		// Add players
 		add(allPlayers);
+		// Add bars
+		add(allBars);
 		// Give guns
 		for (player in allPlayers)
 		{
@@ -184,10 +192,23 @@ class PlayState extends FlxState
 	{
 		var character = new Character(playerEntity.pixelX, playerEntity.pixelY, characterChoices[currentPlayer], playerEntity.f_Player_Id,
 			givePlayerBullets(), allGamepads[currentPlayer]);
+		// Give trail
 		character.trail = new FlxTrail(character, 12, 0, 0.5, 0.02);
 		allTrails.add(character.trail);
 		// Turn trail off
 		character.trail.kill();
+		// Set up bars
+		character.abilityBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 1, 8, character, character.abilityValue, 0, 100, true);
+		character.abilityBar.trackParent(-2, 4);
+		allBars.add(character.abilityBar);
+		character.dashBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 1, 8, character, character.dashValue, 0, 100, true);
+		character.dashBar.trackParent(18, 4);
+		allBars.add(character.dashBar);
+		character.shotBar = new FlxBar(0, 0, LEFT_TO_RIGHT, 10, 1, character, character.shotValue, 0, 100, true);
+		character.shotBar.trackParent(3, 23);
+		allBars.add(character.shotBar);
+
+		// Return
 		return character;
 	}
 

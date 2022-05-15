@@ -15,6 +15,7 @@ import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
@@ -27,6 +28,14 @@ class Player extends FlxSprite
 	public var MAXHEALTH:Int = 3;
 	public var playerId:Int;
 	public var isMoving:Bool;
+
+	// Cooldown bar variables
+	public var abilityBar:FlxBar;
+	public var abilityValue:String;
+	public var dashBar:FlxBar;
+	public var dashValue:String;
+	public var shotBar:FlxBar;
+	public var shotValue:String;
 
 	// Gun variables
 	public var gun:FlxSprite;
@@ -68,6 +77,10 @@ class Player extends FlxSprite
 	{
 		// Call super
 		super.update(elapsed);
+		// update bars
+		abilityBar.updateBar();
+		dashBar.updateBar();
+		shotBar.updateBar();
 	}
 
 	private function movePlayer(gamepad:FlxGamepad)
@@ -129,6 +142,7 @@ class Player extends FlxSprite
 	private function resetShoot(timer:FlxTimer)
 	{
 		canShoot = true;
+		shotValue = "100";
 	}
 
 	public function isShootReady():Bool
@@ -157,6 +171,9 @@ class Player extends FlxSprite
 
 			// Flip canShoot
 			canShoot = false;
+
+			// Set bar value
+			shotValue = "0";
 
 			// Reset shootCooldown
 			shootCooldown.start(.25, resetShoot, 1);
@@ -191,6 +208,7 @@ class Player extends FlxSprite
 	private function resetDash(timer:FlxTimer)
 	{
 		canDash = true;
+		dashValue = "100";
 	}
 
 	public function isDashReady():Bool
@@ -211,6 +229,8 @@ class Player extends FlxSprite
 
 			// Toggle canDash
 			canDash = false;
+			// Set bar value
+			dashValue = "0";
 			// Reset dashCooldown
 			dashCooldown.start(2, resetDash, 1);
 		}

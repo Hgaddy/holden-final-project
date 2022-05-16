@@ -1,5 +1,6 @@
 package;
 
+import Hud;
 import bullet.Bullet;
 import character.Character;
 import character.CharacterTypes;
@@ -10,8 +11,6 @@ import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
-import flixel.input.gamepad.FlxGamepadManager;
-import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
@@ -30,6 +29,9 @@ class PlayState extends FlxState
 	private var levelID:Int;
 	private var currentLevelCollision:FlxTilemap;
 
+	// Hud
+	var hud:Hud;
+
 	// All lists
 	var allPlayers:FlxTypedGroup<Player>;
 	var allGuns:FlxTypedGroup<FlxSprite>;
@@ -44,6 +46,9 @@ class PlayState extends FlxState
 	var startTimer:FlxTimer = new FlxTimer();
 	var countdownNumber:Int = 3;
 	var countdownMessage:FlxText;
+	var reloadLevelTimer:FlxTimer = new FlxTimer();
+	var isReloading:Bool = false;
+	var maxScore:Int = 5;
 
 	public function new(allGamepads:Array<FlxGamepad>, characterChoices:Array<CharacterTypes>, numPlayers:Int = 2)
 	{
@@ -63,6 +68,12 @@ class PlayState extends FlxState
 
 		// start music
 		FlxG.sound.playMusic(AssetPaths.playMusic__wav, 0.4, true);
+
+		// Initialize hud
+		hud = new Hud(numPlayers, characterChoices);
+		hud.initCharacterHeads();
+		hud.initCrowns();
+		hud.initScores();
 
 		// Initialize lists
 		allBullets = new FlxGroup();
@@ -99,6 +110,11 @@ class PlayState extends FlxState
 			allGuns.add(player.gun);
 			add(player.gun);
 		}
+		// Add hud
+		add(hud.characterHeads);
+		add(hud.crowns);
+		add(hud.scores);
+		// Countdown
 		startCountdown();
 	}
 
@@ -178,8 +194,12 @@ class PlayState extends FlxState
 		var currentPlayer:Int = 0;
 		for (playerEntity in level.l_Entities.all_Player)
 		{
+			if (currentPlayer == numPlayers)
+			{
+				break;
+			}
 			allPlayers.add(instantiatePlayer(playerEntity, currentPlayer));
-			break;
+			currentPlayer++;
 		}
 
 		// // Victory message
@@ -190,22 +210,20 @@ class PlayState extends FlxState
 
 	private function instantiatePlayer(playerEntity:LdtkProject.Entity_Player, currentPlayer:Int):Player
 	{
-		var character = new Character(playerEntity.pixelX, playerEntity.pixelY, characterChoices[currentPlayer], playerEntity.f_Player_Id,
-			givePlayerBullets(), allGamepads[currentPlayer]);
+		var character = new Character(playerEntity.pixelX, playerEntity.pixelY, characterChoices[currentPlayer], currentPlayer, givePlayerBullets(),
+			allGamepads[currentPlayer]);
 		// Give trail
 		character.trail = new FlxTrail(character, 12, 0, 0.5, 0.02);
 		allTrails.add(character.trail);
 		// Turn trail off
 		character.trail.kill();
 		// Set up bars
-		character.abilityBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 1, 8, character, character.abilityValue, 0, 100, true);
-		character.abilityBar.trackParent(-2, 4);
-		allBars.add(character.abilityBar);
-		character.dashBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 1, 8, character, character.dashValue, 0, 100, true);
-		character.dashBar.trackParent(18, 4);
+		character.dashBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 1, 5, character, "dashValue", 0, 1, false);
+		character.dashBar.trackParent(-1, 2);
+		character.dashBar.createColoredFilledBar(FlxColor.RED, false);
 		allBars.add(character.dashBar);
-		character.shotBar = new FlxBar(0, 0, LEFT_TO_RIGHT, 10, 1, character, character.shotValue, 0, 100, true);
-		character.shotBar.trackParent(3, 23);
+		character.shotBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 1, 5, character, "shotValue", 0, 1, false);
+		character.shotBar.trackParent(-2, 2);
 		allBars.add(character.shotBar);
 
 		// Return
@@ -270,7 +288,44 @@ class PlayState extends FlxState
 		add(countdownMessage);
 	}
 
-	private function reloadLevel()
+	private function checkReload()
+	{
+		// Check if last alive
+		var numAlive:Int = 0;
+		for (player in allPlayers)
+		{
+			if (player.alive)
+			{
+				numAlive++;
+			}
+		}
+		if (numAlive != 1)
+		{
+			return;
+		}
+		// Reload level
+		if (!isReloading)
+		{
+			for (i in 0...numPlayers)
+			{
+				if (allPlayers.members[i].alive)
+				{
+					hud.addScore(i);
+				}
+			}
+			for (player in allPlayers)
+			{
+				// Reset BASEVEL
+				player.BASEVEL = 50;
+			}
+			// Set isReloading
+			isReloading = true;
+			// Start reload timer
+			reloadLevelTimer.start(2, reloadLevel, 1);
+		}
+	}
+
+	private function reloadLevel(timer:FlxTimer)
 	{
 		// Get current level
 		var level = project.getLevel(levelID);
@@ -280,7 +335,11 @@ class PlayState extends FlxState
 		{
 			allPlayers.members[currentPlayer].reset(playerEntity.pixelX, playerEntity.pixelY);
 			allPlayers.members[currentPlayer].gun.reset(playerEntity.pixelX, playerEntity.pixelY);
+			allPlayers.members[currentPlayer].dashBar.reset(playerEntity.pixelX, playerEntity.pixelY);
+			allPlayers.members[currentPlayer].shotBar.reset(playerEntity.pixelX, playerEntity.pixelY);
 			allPlayers.members[currentPlayer].canPlay = false;
+			allPlayers.members[currentPlayer].isMoving = false;
+			allPlayers.members[currentPlayer].BASEVEL = 200;
 			currentPlayer++;
 			// Check if reached numPlayers
 			if (currentPlayer == numPlayers)
@@ -288,8 +347,43 @@ class PlayState extends FlxState
 				break;
 			}
 		}
+		// Set isReloading
+		isReloading = false;
 		// Restart countdown
 		startCountdown();
+	}
+
+	private function checkWin()
+	{
+		// Check which player
+		if (hud.player1Score == maxScore)
+		{
+			winState(1);
+		}
+		if (hud.player2Score == maxScore)
+		{
+			winState(2);
+		}
+		if (hud.player3Score == maxScore)
+		{
+			winState(3);
+		}
+		if (hud.player4Score == maxScore)
+		{
+			winState(4);
+		}
+	}
+
+	private function winState(winningPlayer:Int)
+	{
+		// Fade to next
+		FlxG.camera.fade(FlxColor.BLACK, 0.33, false, function()
+		{
+			// Stop music
+			FlxG.sound.music.stop();
+			// Switch state
+			FlxG.switchState(new WinState(winningPlayer));
+		});
 	}
 
 	override public function update(elapsed:Float)
@@ -302,16 +396,20 @@ class PlayState extends FlxState
 		// FlxG.collide(currentLevelCollision, allGuns, (tilemap:Dynamic, gun:Dynamic) -> trace(gun));
 		FlxG.collide(currentLevelCollision, allBullets, Bullet.bounce);
 
-		// Player and bullet collision
+		// Player and bullet overlap
 		FlxG.overlap(allPlayers, allBullets, Player.overlapsWithBullet);
+		// Player and player overlap
+		FlxG.overlap(allPlayers, allPlayers, Player.overlapsWithPlayer);
 
 		if (FlxG.gamepads.anyJustPressed(BACK))
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
-		if (FlxG.gamepads.anyJustPressed(START))
-		{
-			reloadLevel();
-		}
+
+		// Check if reload
+		checkReload();
+
+		// Check for win
+		checkWin();
 	}
 }

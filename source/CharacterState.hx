@@ -2,19 +2,20 @@ package;
 
 import character.CharacterSelector;
 import character.CharacterTypes;
-import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
 class CharacterState extends FlxState
 {
 	// Background
 	var backdrop:FlxBackdrop;
+	var text:FlxText;
 
 	// Needed lists
 	private var allGamepads:Array<FlxGamepad> = [];
@@ -37,6 +38,11 @@ class CharacterState extends FlxState
 		backdrop = new FlxBackdrop(AssetPaths.MenuBackground__png, 1, 0, true, false, 0, 0);
 		backdrop.velocity.set(-100, 0);
 		add(backdrop);
+
+		// Create text
+		text = new FlxText(0, 10, 0, "Choose Your Character", 45);
+		text.screenCenter(X);
+		add(text);
 
 		// Fade in
 		FlxG.camera.fade(FlxColor.BLACK, 0.33, true);

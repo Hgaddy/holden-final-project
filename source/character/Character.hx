@@ -8,10 +8,10 @@ package character;
 
 import bullet.Bullet;
 import character.CharacterTypes;
+import flixel.FlxG;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import player.Player;
 
@@ -30,6 +30,10 @@ class Character extends Player
 
 	// Controller
 	var gamepad:FlxGamepad;
+
+	// Tracking
+	var alreadyPlaying:Bool = false;
+	var walkSoundTimer:FlxTimer = new FlxTimer();
 
 	public function new(X:Float = 0, Y:Float = 0, type:CharacterTypes = CharacterTypes.Moss, playerId:Int = 0, playerBullets:FlxTypedGroup<Bullet>,
 			playerGamepad:FlxGamepad)
@@ -102,14 +106,26 @@ class Character extends Player
 		if (isMoving == true)
 		{
 			animation.play("walk");
+			if (!alreadyPlaying)
+			{
+				alreadyPlaying = true;
+				walkSoundTimer.start(0.25, playWalkSound, 0);
+			}
 		}
 		else
 		{
 			animation.play("stand");
+			walkSoundTimer.cancel();
+			alreadyPlaying = false;
 		}
 
 		// Call super
 		super.update(elapsed);
+	}
+
+	private function playWalkSound(timer:FlxTimer)
+	{
+		FlxG.sound.play(AssetPaths.walkSound__wav, 0.30);
 	}
 
 	private function resetAbility(timer:FlxTimer)
@@ -122,17 +138,7 @@ class Character extends Player
 		return abilityReady;
 	}
 
-	private function navyAbility()
-	{
-		if (abilityReady && gamepad.pressed.LEFT_SHOULDER)
-		{
-			// Reset cooldown timer
-			abilityCooldown.start(abilityCooldownLength, resetAbility, 1);
-
-			// Turn abilityReady to false
-			abilityReady = false;
-		}
-	}
+	private function navyAbility() {}
 
 	private function mossAbility() {}
 

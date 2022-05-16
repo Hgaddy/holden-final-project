@@ -7,16 +7,13 @@
 package player;
 
 import bullet.Bullet;
-import character.Character;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup;
-import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxBar;
-import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
 class Player extends FlxSprite
@@ -28,14 +25,13 @@ class Player extends FlxSprite
 	public var MAXHEALTH:Int = 3;
 	public var playerId:Int;
 	public var isMoving:Bool;
+	public var isDashing:Bool;
 
 	// Cooldown bar variables
-	public var abilityBar:FlxBar;
-	public var abilityValue:String;
 	public var dashBar:FlxBar;
-	public var dashValue:String;
+	public var dashValue:Int = 100;
 	public var shotBar:FlxBar;
-	public var shotValue:String;
+	public var shotValue:Int = 100;
 
 	// Gun variables
 	public var gun:FlxSprite;
@@ -68,6 +64,8 @@ class Player extends FlxSprite
 		// Change player variables
 		this.playerId = playerId;
 		this.drag = BASEDRAG;
+		setFacingFlip(LEFT, true, false);
+		setFacingFlip(RIGHT, false, false);
 
 		// Create bullet list
 		bullets = playerBullets;
@@ -77,10 +75,6 @@ class Player extends FlxSprite
 	{
 		// Call super
 		super.update(elapsed);
-		// update bars
-		abilityBar.updateBar();
-		dashBar.updateBar();
-		shotBar.updateBar();
 	}
 
 	private function movePlayer(gamepad:FlxGamepad)
@@ -89,11 +83,11 @@ class Player extends FlxSprite
 		if (!gamepad.getAnalogAxes(LEFT_ANALOG_STICK).isZero())
 		{
 			// Set facing
-			if (angle > 90 && angle <= 270)
+			if (angle > 90 && angle < 270)
 			{
 				facing = LEFT;
 			}
-			else
+			if (angle < 90 || angle > 270)
 			{
 				facing = RIGHT;
 			}
@@ -142,7 +136,7 @@ class Player extends FlxSprite
 	private function resetShoot(timer:FlxTimer)
 	{
 		canShoot = true;
-		shotValue = "100";
+		shotValue = 1;
 	}
 
 	public function isShootReady():Bool
@@ -173,24 +167,28 @@ class Player extends FlxSprite
 			canShoot = false;
 
 			// Set bar value
-			shotValue = "0";
+			shotValue = 0;
 
 			// Reset shootCooldown
-			shootCooldown.start(.25, resetShoot, 1);
+			shootCooldown.start(.75, resetShoot, 1);
 		}
 	}
 
 	private function resetSPEED(timer:FlxTimer)
 	{
+		// Toggle isDashing
+		isDashing = false;
+		// Reset speed
 		BASEVEL = 200;
 	}
 
 	private function boostSPEED()
 	{
+		// Toggle isDashing
+		isDashing = true;
 		// Change speed
-		BASEVEL = 1000;
-
-		// Start timer
+		BASEVEL = BASEVEL * 5;
+		// Start timer 0.08
 		speedChange.start(0.08, resetSPEED, 1);
 	}
 
@@ -208,7 +206,7 @@ class Player extends FlxSprite
 	private function resetDash(timer:FlxTimer)
 	{
 		canDash = true;
-		dashValue = "100";
+		dashValue = 1;
 	}
 
 	public function isDashReady():Bool
@@ -226,26 +224,34 @@ class Player extends FlxSprite
 			trailOn();
 			// Turn trail off timer
 			trailOffTimer.start(0.08, trailOff, 1);
-
 			// Toggle canDash
 			canDash = false;
 			// Set bar value
-			dashValue = "0";
+			dashValue = 0;
 			// Reset dashCooldown
-			dashCooldown.start(2, resetDash, 1);
+			dashCooldown.start(1.75, resetDash, 1);
 		}
 	}
 
 	public static function overlapsWithBullet(player:Player, bullet:Bullet)
 	{
+		if (player.isDashing)
+		{
+			bullet.kill();
+			return;
+		}
 		if (bullet.bulletId == player.playerId && bullet.canHurtOwner)
 		{
 			// Kill player
 			player.kill();
 			// Kill player gun
 			player.gun.kill();
+			// Kill bars
+			player.dashBar.kill();
+			player.shotBar.kill();
 			// Kill bullet
 			bullet.kill();
+			FlxG.sound.play(AssetPaths.deathSound__wav, 0.80);
 		}
 		if (bullet.bulletId != player.playerId)
 		{
@@ -253,8 +259,42 @@ class Player extends FlxSprite
 			player.kill();
 			// Kill player gun
 			player.gun.kill();
+			// Kill bars
+			player.dashBar.kill();
+			player.shotBar.kill();
 			// Kill bullet
 			bullet.kill();
+			FlxG.sound.play(AssetPaths.deathSound__wav, 0.80);
+		}
+	}
+
+	public static function overlapsWithPlayer(player1:Player, player2:Player)
+	{
+		if (player1.isDashing && player2.isDashing)
+		{
+			return;
+		}
+		if (player1.isDashing)
+		{
+			// Kill player 2
+			player2.kill();
+			player2.gun.kill();
+			// Kill player 2 bars
+			player2.dashBar.kill();
+			player2.shotBar.kill();
+
+			return;
+		}
+		else
+		{
+			// Kill player 1
+			player1.kill();
+			player1.gun.kill();
+			// Kill player 1 bars
+			player1.dashBar.kill();
+			player1.shotBar.kill();
+
+			return;
 		}
 	}
 }

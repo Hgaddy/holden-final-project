@@ -1,18 +1,14 @@
 package bullet;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
-import flixel.tile.FlxTile;
 import flixel.tile.FlxTilemap;
-import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
 class Bullet extends FlxSprite
 {
 	// Bullet variables
-	public static var SPEED = 500;
-
+	public var SPEED:Int = 400;
 	public var bulletId:Int;
 	public var bouncesLeft:Int = 4;
 	public var hurtOwnerTimer:FlxTimer = new FlxTimer();
@@ -26,12 +22,9 @@ class Bullet extends FlxSprite
 		super(X, Y);
 		// Make graphic
 		loadGraphic(AssetPaths.bullet__png, false, 5, 3);
-
-		// Set bullet direction
-		setDirection(angle);
 	}
 
-	public function fire(X:Float = 0, Y:Float = 0, angle)
+	public function fire(X:Float = 0, Y:Float = 0, angle:Float)
 	{
 		// Reset variables
 		bouncesLeft = 4;

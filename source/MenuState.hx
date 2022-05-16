@@ -2,13 +2,13 @@ package;
 
 import character.CharacterSelector;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import lime.system.System;
 
 class MenuState extends FlxState
 {
@@ -32,11 +32,9 @@ class MenuState extends FlxState
 		backdrop.velocity.set(-100, 0);
 		add(backdrop);
 
-		if (FlxG.sound.music == null) // don't restart the music if it's already playing
-		{
-			// Start music after delay
-			musicStartTimer.start(0.48, playMusic, 1);
-		}
+		// Start music after delay
+		musicStartTimer.start(0.48, playMusic, 1);
+
 		// Create sprites
 		allSprites = new FlxSpriteGroup();
 		allSprites.add(new CharacterSelector(FlxG.width / 2 - 190, 300, Moss));
@@ -46,7 +44,7 @@ class MenuState extends FlxState
 		add(allSprites);
 
 		// Create title
-		titleText = new FlxText(20, 0, 0, "GameName", 35);
+		titleText = new FlxText(30, 0, 0, "Bounce Bros", 35);
 		titleText.screenCenter(X);
 		add(titleText);
 
@@ -78,14 +76,20 @@ class MenuState extends FlxState
 		// Call super
 		super.update(elapsed);
 
+		// Check if Start pressed
+		if (FlxG.gamepads.anyJustPressed(START))
+		{
+			nextState();
+		}
 		// Set fullscreen
 		if (FlxG.gamepads.anyJustPressed(BACK))
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
-		if (FlxG.gamepads.anyJustPressed(START))
+		// Check if B pressed
+		if (FlxG.gamepads.anyJustPressed(B))
 		{
-			nextState();
+			System.exit(0);
 		}
 	}
 }

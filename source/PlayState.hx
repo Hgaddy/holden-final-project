@@ -16,6 +16,7 @@ import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import graphics.Torch;
 import ldtk.Level;
 import openfl.display.Tilemap;
 import player.Player;
@@ -40,6 +41,7 @@ class PlayState extends FlxState
 	var characterChoices:Array<CharacterTypes> = [];
 	var allBullets:FlxGroup;
 	var allGamepads:Array<FlxGamepad> = [];
+	var allTorches:FlxTypedGroup<Torch>;
 
 	// Tracking variables
 	var numPlayers:Int;
@@ -102,6 +104,8 @@ class PlayState extends FlxState
 		add(allBullets);
 		// Add players
 		add(allPlayers);
+		// Load torches
+		add(allTorches);
 		// Add bars
 		add(allBars);
 		// Give guns
@@ -182,6 +186,8 @@ class PlayState extends FlxState
 		level.l_Walls_IntGrid.render(container);
 		level.l_Floor.render(container);
 		level.l_Void.render(container);
+		level.l_Banners.render(container);
+		level.l_Carpet.render(container);
 	}
 
 	private function loadEntities(project:LdtkProject, levelId:Int)
@@ -202,10 +208,14 @@ class PlayState extends FlxState
 			currentPlayer++;
 		}
 
-		// // Victory message
-		// victoryMessage = instantiateVictoryMessage(level.l_Entities.all_Victory_Message[0]);
+		// Interate through all 'Torch' entities in the layer 'Torches'
+		allTorches = new FlxTypedGroup<Torch>(level.l_Torches.all_Torch.length);
 
-		// add(victoryMessage);
+		for (torchEntity in level.l_Torches.all_Torch)
+		{
+			allTorches.add(new Torch(torchEntity.pixelX, torchEntity.pixelY, torchEntity.f_Direction));
+			trace(torchEntity.f_Direction);
+		}
 	}
 
 	private function instantiatePlayer(playerEntity:LdtkProject.Entity_Player, currentPlayer:Int):Player
@@ -229,14 +239,6 @@ class PlayState extends FlxState
 		// Return
 		return character;
 	}
-
-	// private function instantiateVictoryMessage(victoryMessageEntity:LdtkProject.Entity_Victory_Message):FlxText
-	// {
-	// 	var victoryMessage = new FlxText(victoryMessageEntity.pixelX, victoryMessageEntity.pixelY, victoryMessageEntity.width, victoryMessageEntity.f_Message,
-	// 		victoryMessageEntity.height);
-	// 	victoryMessage.visible = false;
-	// 	return victoryMessage;
-	// }
 
 	private function givePlayerBullets():FlxTypedGroup<Bullet>
 	{
@@ -407,9 +409,9 @@ class PlayState extends FlxState
 		}
 
 		// Check if reload
-		checkReload();
+		// checkReload();
 
 		// Check for win
-		checkWin();
+		// checkWin();
 	}
 }

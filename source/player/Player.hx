@@ -285,7 +285,7 @@ class Player extends FlxSprite
 
 			return;
 		}
-		else
+		if (player2.isDashing)
 		{
 			// Kill player 1
 			player1.kill();

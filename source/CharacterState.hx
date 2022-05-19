@@ -75,11 +75,6 @@ class CharacterState extends FlxState
 				// Increment numPlayers
 				numPlayers++;
 			}
-			else
-			{
-				// Leave loop
-				break;
-			}
 		}
 	}
 
